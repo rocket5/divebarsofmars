@@ -1,3 +1,35 @@
-.prettierrc
-node_modules
-dist
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE/Editor folders
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+package-lock.json
+
+# Build files
+dist/
+build/
+
+# Audio files
+# Uncomment the line below if you don't want to include audio files in your repository
+# assets/audio/*.mp3
+
+# Large binary files
+*.zip
+*.rar
+*.7z
+*.tar.gz
