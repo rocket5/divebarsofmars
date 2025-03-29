@@ -1,13 +1,15 @@
-# Music Video Experience
+# Astronaut in Space
 
-A Three.js-based interactive music visualization for web browsers, designed to be hosted on GitHub Pages.
+A Three.js-based interactive 3D experience featuring an astronaut floating in space with a star field background and music.
 
 ## Features
 
-- Interactive 3D visualization that reacts to music
-- Audio playback controls (play, pause, seek)
+- 3D astronaut model that floats in space
+- Interactive controls to rotate and zoom the camera
+- Beautiful star field created with particle system
+- Background music ("Dive Bars of Mars") that loops
+- Audio controls for muting/unmuting
 - Responsive design for various screen sizes
-- Particle system and geometric shapes that respond to audio frequencies
 - Loading screen with progress indicator
 
 ## Setup Instructions
@@ -18,11 +20,14 @@ A Three.js-based interactive music visualization for web browsers, designed to b
    cd [repository-name]
    ```
 
-2. **Add your music**
+2. **Add your audio file**
    - Place your MP3 file in the `assets/audio` directory
-   - Rename it to `music.mp3` or update the file path in `js/main.js`
+   - Rename it to `divebarsofmars.mp3` or update the file path in `js/main.js`
 
-3. **Testing locally**
+3. **Add the astronaut model**
+   - Place the astronaut.fbx file in the `assets/models` directory
+
+4. **Testing locally**
    Due to browser security restrictions, you'll need to serve the files from a local web server.
    
    Option 1: Using Python's built-in server
@@ -62,21 +67,28 @@ A Three.js-based interactive music visualization for web browsers, designed to b
 4. **Access your deployed site**
    Your site will be available at `https://[your-username].github.io/[repository-name]/`
 
+## Controls
+
+- **Left mouse button + drag**: Rotate the camera around the astronaut
+- **Mouse wheel**: Zoom in and out
+- **Start Experience button**: Begin the audio and full experience
+- **Mute button**: Toggle audio on/off
+
 ## Customization
 
-### Changing Visuals
+### Changing the Star Field
 
-You can modify the visual elements in the `createVisualElements()` method within `js/main.js`. Some ideas:
-- Change the geometry type (cube, sphere, torus, etc.)
-- Adjust particle count and distribution
-- Modify color schemes and lighting
+You can modify the star field in the `createStarField()` method within `js/main.js`. Some ideas:
+- Adjust the number of stars by changing `particleCount`
+- Modify star colors in the `colorOptions` array
+- Change the distribution pattern or density
 
-### Adjusting Audio Response
+### Adjusting Astronaut Animation
 
-Tune how the visuals respond to audio in the `updateVisuals()` method of `js/main.js`:
-- Modify the frequency bands used for color mapping
-- Adjust scaling factors for more or less dramatic responses
-- Change the animation speed and movement patterns
+Tune how the astronaut moves in the `updateAstronautAndStars()` method:
+- Modify floating animation speed and amplitude
+- Adjust rotation speed
+- Change how the audio affects the model
 
 ## Technologies Used
 

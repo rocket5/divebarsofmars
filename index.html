@@ -3,32 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Music Video Experience</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Three.js Demo</title>
+    <style>
+        body { margin: 0; padding: 0; overflow: hidden; }
+    </style>
 </head>
 <body>
-    <div id="container">
-        <div id="loading-screen">
-            <div class="loading-content">
-                <h1>Loading Experience</h1>
-                <div class="progress-bar-container">
-                    <div class="progress-bar"></div>
-                </div>
-            </div>
-        </div>
-        <div id="play-button-container">
-            <button id="play-button">Play Music Video</button>
-        </div>
-        <div id="controls">
-            <button id="pause-button">Pause</button>
-            <input type="range" id="progress-slider" min="0" max="100" value="0">
-            <div id="time-display">00:00 / 00:00</div>
-        </div>
-    </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="js/main.js"></script>
+    <script type="module" src="/main.js"></script>
 </body>
 </html> 
