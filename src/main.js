@@ -181,12 +181,19 @@ const astronautTexture = textureLoader.load(
         texture.magFilter = THREE.LinearFilter;
         texture.needsUpdate = true;
         
+        console.log('Texture loaded successfully');
+        
         // If we have the model already loaded, apply the texture
         if (astronaut) {
+            console.log('Astronaut model is already loaded, applying texture');
             applyTextureToModel(astronaut, texture);
+        } else {
+            console.log('Waiting for astronaut model to load before applying texture');
         }
     },
-    undefined,
+    function(xhr) {
+        console.log('Texture loading progress:', Math.round((xhr.loaded / xhr.total) * 100) + '%');
+    },
     function(error) {
         console.error('Error loading texture:', error);
     }
@@ -194,17 +201,54 @@ const astronautTexture = textureLoader.load(
 
 // Function to apply texture to model meshes
 function applyTextureToModel(model, texture) {
+    console.log('Applying texture to model...');
+    let meshCount = 0;
+    
+    // Create a single shared material to ensure consistency
+    const sharedMaterial = new THREE.MeshStandardMaterial({
+        map: texture,
+        side: THREE.DoubleSide,
+        metalness: 0.0,
+        roughness: 0.2,
+        color: 0x8ac926,
+        transparent: false,
+        opacity: 1.0,
+        emissive: 0x8ac926,
+        flatShading: false,
+        vertexColors: false
+    });
+    
+    console.log('Material properties:', {
+        color: sharedMaterial.color.getHexString(),
+        metalness: sharedMaterial.metalness,
+        roughness: sharedMaterial.roughness
+    });
+    
     model.traverse((child) => {
         if (child.isMesh) {
-            child.material = new THREE.MeshStandardMaterial({
-                map: texture,
-                side: THREE.DoubleSide,
-                metalness: 0.2,
-                roughness: 0.5,
-                color: 0x000814
-            });
+            const oldMaterial = child.material;
+            meshCount++;
+            
+            // Apply the shared material to ensure consistency
+            child.material = sharedMaterial.clone();
+            
+            // Log material info for debugging
+            console.log(`Mesh ${child.name || 'unnamed'} - Previous material:`, 
+                oldMaterial ? 
+                {type: oldMaterial.type, color: oldMaterial.color?.getHexString()} : 
+                'none');
+            
+            // Ensure shadows work properly
+            child.castShadow = true;
+            child.receiveShadow = true;
+            child.visible = true;
+            
+            // Force material update
+            child.material.needsUpdate = true;
         }
     });
+    
+    console.log(`Applied material to ${meshCount} meshes`);
 }
 
 // Set up FBX loader
@@ -395,6 +439,14 @@ fbxLoader.load(
         // Add the model to the container and offset it to be centered
         container.add(astronaut);
         astronaut.position.set(-center.x, -center.y, -center.z);
+        
+        // Print model hierarchy for debugging
+        console.log('Model hierarchy:');
+        function printHierarchy(obj, indent = '') {
+            console.log(`${indent}${obj.name || 'unnamed'} (${obj.type}) - visible: ${obj.visible}`);
+            obj.children.forEach(child => printHierarchy(child, indent + '  '));
+        }
+        printHierarchy(container);
         
         // Save reference to the container instead of the model
         astronaut = container;
