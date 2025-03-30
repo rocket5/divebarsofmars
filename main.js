@@ -95,28 +95,12 @@ const astronautTexture = textureLoader.load(
 function applyTextureToModel(model, texture) {
     model.traverse((child) => {
         if (child.isMesh) {
-            // Create material based on the original mesh material type
-            let meshMaterial;
-            
-            if (child.material && child.material.type === 'MeshLambertMaterial') {
-                meshMaterial = new THREE.MeshLambertMaterial({
-                    map: texture,
-                    side: THREE.DoubleSide,
-                    emissive: new THREE.Color(0x222222)
-                });
-            } else {
-                meshMaterial = new THREE.MeshBasicMaterial({
-                    map: texture,
-                    side: THREE.DoubleSide
-                });
-            }
-            
-            // Apply the material
-            if (meshMaterial) {
-                meshMaterial.map.needsUpdate = true;
-                meshMaterial.needsUpdate = true;
-                child.material = meshMaterial;
-            }
+            child.material = new THREE.MeshStandardMaterial({
+                map: texture,
+                side: THREE.DoubleSide,
+                metalness: 0.2,
+                roughness: 0.8
+            });
         }
     });
 }
