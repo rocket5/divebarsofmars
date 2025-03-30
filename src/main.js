@@ -200,7 +200,8 @@ function applyTextureToModel(model, texture) {
                 map: texture,
                 side: THREE.DoubleSide,
                 metalness: 0.2,
-                roughness: 0.8
+                roughness: 0.5,
+                color: 0x000814
             });
         }
     });
@@ -237,7 +238,7 @@ function createStarField() {
     starTexture.colorSpace = THREE.SRGBColorSpace;
     
     // Create groups of stars with different sizes and colors
-    const starSizes = [0.05, 0.1, 0.15, 0.2];
+    const starSizes = [0.2, 0.5, 0.3, 0.6];
     const starColors = [0xFFFFFF, 0xEEEEFF, 0xCCDDFF, 0xFFEEDD];
     
     // Create particle systems for each star type
