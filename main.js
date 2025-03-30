@@ -35,6 +35,10 @@ document.body.appendChild(loadingElem);
 // Variable to store astronaut model
 let astronaut;
 
+// Animation mixer and clock
+let mixer = null;
+const clock = new THREE.Clock();
+
 // Stronger lighting setup for Lambert materials
 // Increase ambient light for better overall illumination
 const ambientLight = new THREE.AmbientLight(0xffffff, 3.0);
@@ -404,12 +408,22 @@ fbxLoader.load(
         // Scale the model to appropriate size
         astronaut.scale.set(0.05, 0.05, 0.05);
         
-        // Center the model
+        
+        
+        // Calculate model's offset from intended center
         const box = new THREE.Box3().setFromObject(astronaut);
         const center = box.getCenter(new THREE.Vector3());
-        astronaut.position.x = -center.x;
-        astronaut.position.y = -center.y;
-        astronaut.position.z = -center.z;
+        
+        // Create a container object at the origin
+        const container = new THREE.Group();
+        scene.add(container);
+        
+        // Add the model to the container and offset it to be centered
+        container.add(astronaut);
+        astronaut.position.set(-center.x, -center.y, -center.z);
+        
+        // Save reference to the container instead of the model
+        astronaut = container;
         
         // Log material information for debugging
         console.log('Astronaut object:', object);
@@ -436,6 +450,48 @@ fbxLoader.load(
                 }
             }
         });
+        
+        // Set up animation
+        if (object.animations && object.animations.length > 0) {
+            console.log(`Found ${object.animations.length} animations in the model`);
+            object.animations.forEach((clip, index) => {
+                console.log(`Animation ${index}: ${clip.name}, duration: ${clip.duration}s`);
+            });
+            
+            // Clone the animation before modifying it
+            const originalClip = object.animations[0];
+            const filteredClip = originalClip.clone();
+            
+            // Filter out position/translation tracks (root motion)
+            const tracks = filteredClip.tracks;
+            console.log(`Original animation has ${tracks.length} tracks`);
+            
+            // Keep only rotation and scale tracks, filter out position tracks
+            filteredClip.tracks = tracks.filter(track => {
+                // Keep if not a position track (typically named with .position)
+                const isPositionTrack = track.name.toLowerCase().includes('position');
+                if (isPositionTrack) {
+                    console.log(`Filtering out position track: ${track.name}`);
+                }
+                return !isPositionTrack;
+            });
+            
+            console.log(`Filtered animation now has ${filteredClip.tracks.length} tracks`);
+            
+            // Create animation mixer for the container
+            mixer = new THREE.AnimationMixer(container);
+            
+            // Play the filtered animation with optionalRoot parameter
+            const action = mixer.clipAction(filteredClip, astronaut);
+            action.play();
+            
+            console.log('Started playing filtered animation without root motion');
+        } else {
+            console.log('No animations found in the model');
+        }
+
+        // Position directly at scene origin
+        astronaut.position.set(0, 0, 0);
         
         // Check and attempt to fix any UV issues before applying texture
         checkAndFixUVs(astronaut);
@@ -486,10 +542,17 @@ window.addEventListener('resize', () => {
 // Animation loop
 function animate() {
     requestAnimationFrame(animate);
+    
+    // Update animation mixer
+    const delta = clock.getDelta();
+    if (mixer) {
+        mixer.update(delta);
+    }
 
     // Rotate astronaut if loaded
     if (astronaut) {
-        astronaut.rotation.y += 0.01;
+        // Comment out the manual rotation as we're using animation
+        // astronaut.rotation.y += 0.01;
     }
     
     // Rotate test cubes if loaded
