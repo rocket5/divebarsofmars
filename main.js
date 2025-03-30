@@ -4,7 +4,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 
 // Scene setup
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x333333); // Light gray background for debugging
+scene.background = new THREE.Color(0x0a9396); // Teal background color
 
 // Camera setup
 const camera = new THREE.PerspectiveCamera(
