@@ -103,7 +103,7 @@ document.addEventListener('mousedown', startAudio);
 
 // Scene setup
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0a9396); // Teal background color
+scene.background = new THREE.Color(0x000814); // Deep space color
 
 // Camera setup
 const camera = new THREE.PerspectiveCamera(
@@ -210,6 +210,170 @@ function applyTextureToModel(model, texture) {
 const fbxLoader = new FBXLoader();
 fbxLoader.setPath(`${baseUrl}assets/models/`);
 
+// Create star particles for space environment
+function createStarField() {
+    const particleCount = 2000;
+    const particleGeometry = new THREE.BufferGeometry();
+    const particleMaterials = [];
+    
+    // Create a programmatic star texture for glow effect
+    const starCanvas = document.createElement('canvas');
+    starCanvas.width = 32;
+    starCanvas.height = 32;
+    const ctx = starCanvas.getContext('2d');
+    
+    // Draw a radial gradient to create a glowing dot
+    const gradient = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
+    gradient.addColorStop(0.3, 'rgba(240, 240, 255, 0.8)');
+    gradient.addColorStop(0.7, 'rgba(220, 220, 255, 0.3)');
+    gradient.addColorStop(1, 'rgba(200, 200, 255, 0)');
+    
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 32, 32);
+    
+    // Create texture from canvas
+    const starTexture = new THREE.CanvasTexture(starCanvas);
+    starTexture.colorSpace = THREE.SRGBColorSpace;
+    
+    // Create groups of stars with different sizes and colors
+    const starSizes = [0.05, 0.1, 0.15, 0.2];
+    const starColors = [0xFFFFFF, 0xEEEEFF, 0xCCDDFF, 0xFFEEDD];
+    
+    // Create particle systems for each star type
+    for (let i = 0; i < starSizes.length; i++) {
+        const positions = new Float32Array(particleCount * 3);
+        
+        // Distribute stars in a large sphere around the astronaut
+        for (let j = 0; j < particleCount; j++) {
+            // Random position in spherical coordinates
+            const radius = 30 + Math.random() * 70; // Between 30 and 100 units away
+            const theta = Math.random() * Math.PI * 2; // Random angle around y-axis
+            const phi = Math.acos(2 * Math.random() - 1); // Random angle from y-axis
+            
+            // Convert to Cartesian coordinates
+            const x = radius * Math.sin(phi) * Math.cos(theta);
+            const y = radius * Math.sin(phi) * Math.sin(theta);
+            const z = radius * Math.cos(phi);
+            
+            positions[j * 3] = x;
+            positions[j * 3 + 1] = y;
+            positions[j * 3 + 2] = z;
+        }
+        
+        // Create a buffer geometry for this group of stars
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        
+        // Create material with varying sizes and colors
+        const material = new THREE.PointsMaterial({
+            color: starColors[i],
+            size: starSizes[i],
+            blending: THREE.AdditiveBlending,
+            transparent: true,
+            sizeAttenuation: true,
+            depthWrite: false,
+            map: starTexture
+        });
+        
+        // Create particle system and add to scene
+        const particleSystem = new THREE.Points(geometry, material);
+        scene.add(particleSystem);
+        
+        // Store reference for animation
+        particleMaterials.push({
+            system: particleSystem,
+            rotationSpeed: 0.0001 + Math.random() * 0.0002, // Unique rotation speed
+            rotationAxis: new THREE.Vector3(
+                Math.random() - 0.5,
+                Math.random() - 0.5,
+                Math.random() - 0.5
+            ).normalize()
+        });
+    }
+    
+    return particleMaterials;
+}
+
+// Create star field
+const starSystems = createStarField();
+
+// Add a few brighter "special" stars
+function addSpecialStars() {
+    // Create a brighter star texture
+    const brightStarCanvas = document.createElement('canvas');
+    brightStarCanvas.width = 64;
+    brightStarCanvas.height = 64;
+    const ctx = brightStarCanvas.getContext('2d');
+    
+    // Create a brighter, larger glow
+    const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 1.0)');
+    gradient.addColorStop(0.2, 'rgba(255, 255, 230, 0.9)');
+    gradient.addColorStop(0.5, 'rgba(255, 240, 220, 0.5)');
+    gradient.addColorStop(1, 'rgba(255, 230, 200, 0)');
+    
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 64, 64);
+    
+    // Create texture from canvas
+    const brightStarTexture = new THREE.CanvasTexture(brightStarCanvas);
+    brightStarTexture.colorSpace = THREE.SRGBColorSpace;
+    
+    // Create 12 special, brighter stars
+    const specialStarPositions = [];
+    for (let i = 0; i < 12; i++) {
+        const radius = 35 + Math.random() * 60;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        
+        specialStarPositions.push(
+            radius * Math.sin(phi) * Math.cos(theta),
+            radius * Math.sin(phi) * Math.sin(theta),
+            radius * Math.cos(phi)
+        );
+    }
+    
+    // Create geometry for special stars
+    const specialGeometry = new THREE.BufferGeometry();
+    specialGeometry.setAttribute(
+        'position', 
+        new THREE.Float32BufferAttribute(specialStarPositions, 3)
+    );
+    
+    // Create materials with different colors for variation
+    const specialColors = [0xFFFFBB, 0xFFEECC, 0xAAEEFF];
+    const specialSizes = [0.4, 0.5, 0.6];
+    
+    for (let i = 0; i < specialColors.length; i++) {
+        const material = new THREE.PointsMaterial({
+            color: specialColors[i],
+            size: specialSizes[i],
+            blending: THREE.AdditiveBlending,
+            transparent: true,
+            sizeAttenuation: true,
+            depthWrite: false,
+            map: brightStarTexture
+        });
+        
+        const specialStars = new THREE.Points(specialGeometry, material);
+        scene.add(specialStars);
+        
+        // Add to animation systems
+        starSystems.push({
+            system: specialStars,
+            rotationSpeed: 0.00005 + Math.random() * 0.0001,
+            rotationAxis: new THREE.Vector3(
+                Math.random() - 0.5,
+                Math.random() - 0.5,
+                Math.random() - 0.5
+            ).normalize()
+        });
+    }
+}
+
+addSpecialStars();
+
 // Load astronaut FBX model
 fbxLoader.load(
     'astronaut.fbx',
@@ -298,6 +462,23 @@ function animate() {
     const delta = clock.getDelta();
     if (mixer) {
         mixer.update(delta);
+    }
+
+    // Animate star field - slowly rotate each particle system
+    starSystems.forEach(starSystem => {
+        starSystem.system.rotateOnAxis(starSystem.rotationAxis, starSystem.rotationSpeed);
+        
+        // Make stars twinkle slightly by varying the material opacity
+        const opacity = 0.7 + 0.3 * Math.sin(Date.now() * 0.001 * starSystem.rotationSpeed * 10);
+        starSystem.system.material.opacity = opacity;
+    });
+
+    // Add a subtle floating effect to the astronaut
+    if (astronaut) {
+        // Gentle floating motion on Y axis
+        astronaut.position.y = Math.sin(Date.now() * 0.0005) * 0.2;
+        // Subtle rotation
+        astronaut.rotation.y = Math.sin(Date.now() * 0.0002) * 0.1;
     }
 
     // Update controls
