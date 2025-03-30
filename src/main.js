@@ -109,7 +109,7 @@ scene.background = new THREE.Color(0x000814); // Deep space color
 const camera = new THREE.PerspectiveCamera(
     75, window.innerWidth / window.innerHeight, 0.1, 1000
 );
-camera.position.set(0, 1, 10); // Position camera further back and slightly up
+camera.position.set(0, 1, 120); // Position camera further back and slightly up
 camera.add(listener); // Add audio listener to camera
 
 // Renderer setup
