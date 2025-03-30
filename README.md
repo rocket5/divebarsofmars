@@ -20,52 +20,81 @@ A Three.js-based interactive 3D experience featuring an astronaut floating in sp
    cd [repository-name]
    ```
 
-2. **Add your audio file**
-   - Place your MP3 file in the `assets/audio` directory
-   - Rename it to `divebarsofmars.mp3` or update the file path in `js/main.js`
+2. **Install dependencies**
+   ```
+   npm install
+   ```
 
-3. **Add the astronaut model**
+3. **Add your audio file**
+   - Place your MP3 file in the `assets/audio` directory
+   - Rename it to `divebarsofmars.mp3` or update the file path in the code
+
+4. **Add the astronaut model**
    - Place the astronaut.fbx file in the `assets/models` directory
 
-4. **Testing locally**
-   Due to browser security restrictions, you'll need to serve the files from a local web server.
-   
-   Option 1: Using Python's built-in server
+5. **Development server**
+   Run the development server with hot-reload:
    ```
-   # Python 3
-   python -m http.server
-   
-   # Python 2
-   python -m SimpleHTTPServer
+   npm run dev
    ```
-   
-   Option 2: Using Node.js's http-server
+   Then open your browser and navigate to `http://localhost:5173` (or the port indicated in your terminal).
+
+6. **Building for production**
+   To create a production build:
    ```
-   npm install -g http-server
-   http-server
+   npm run build
    ```
-   
-   Then open your browser and navigate to `http://localhost:8000` (or the port indicated in your terminal).
+   This will generate optimized files in the `dist` directory.
+
+7. **Preview production build**
+   To preview the production build locally:
+   ```
+   npm run preview
+   ```
 
 ## Deploying to GitHub Pages
 
-1. **Create a GitHub repository** (if you haven't already)
+### Automated Deployment
 
-2. **Push your code to GitHub**
-   ```
-   git add .
-   git commit -m "Initial commit"
-   git push origin main
-   ```
+This project includes a GitHub Actions workflow that automatically builds and deploys the site to GitHub Pages whenever changes are pushed to the main branch.
 
-3. **Enable GitHub Pages**
+1. **Setup GitHub repository** (if you haven't already)
+   - Create a new repository on GitHub
+   - Push your code to the repository
+
+2. **Enable GitHub Pages with GitHub Actions**
    - Go to your repository settings
-   - Scroll down to the GitHub Pages section
-   - Select the branch you want to deploy (usually `main`)
-   - Save the settings
+   - Navigate to "Pages" in the sidebar
+   - Under "Build and deployment", select "GitHub Actions" as the source
+   - The workflow in `.github/workflows/deploy.yml` will handle the rest
 
-4. **Access your deployed site**
+3. **Access your deployed site**
    Your site will be available at `https://[your-username].github.io/[repository-name]/`
+
+### Manual Deployment
+
+If you prefer to deploy manually:
+
+1. **Build the project**
+   ```
+   npm run build
+   ```
+
+2. **Deploy the `dist` folder**
+   - You can use the `gh-pages` package:
+     ```
+     npm install -g gh-pages
+     gh-pages -d dist
+     ```
+   - Or manually push the contents of the `dist` folder to the `gh-pages` branch
+
+## Project Structure
+
+- `src/` - Source files
+- `public/` - Static assets that are copied to the build directory
+- `dist/` - Build output (generated after running `npm run build`)
+- `vite.config.js` - Vite configuration
+- `.github/workflows/` - GitHub Actions workflow for automated deployment
 
 ## Controls
 
@@ -97,6 +126,8 @@ Tune how the astronaut moves in the `updateAstronautAndStars()` method:
 - HTML5 Audio for playback
 - CSS3 for styling
 - JavaScript (ES6+) for logic
+- Vite for build tooling and development server
+- GitHub Actions for CI/CD
 
 ## License
 
