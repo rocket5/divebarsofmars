@@ -65,7 +65,9 @@ scene.add(pointLight2);
 
 // Create a texture loader
 const textureLoader = new THREE.TextureLoader();
-textureLoader.setPath('assets/textures/');
+// Use base URL to ensure paths work in deployment
+const baseUrl = import.meta.env.BASE_URL || '/';
+textureLoader.setPath(`${baseUrl}assets/textures/`);
 
 // Load the texture
 const astronautTexture = textureLoader.load(
@@ -107,7 +109,7 @@ function applyTextureToModel(model, texture) {
 
 // Set up FBX loader
 const fbxLoader = new FBXLoader();
-fbxLoader.setPath('assets/models/');
+fbxLoader.setPath(`${baseUrl}assets/models/`);
 
 // Load astronaut FBX model
 fbxLoader.load(
