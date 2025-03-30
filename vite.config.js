@@ -9,7 +9,15 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
-    emptyOutDir: true
+    emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          three: ['three'],
+          vendor: ['three/examples/jsm/controls/OrbitControls.js', 'three/examples/jsm/loaders/FBXLoader.js']
+        }
+      }
+    }
   },
   
   // Resolve asset paths
